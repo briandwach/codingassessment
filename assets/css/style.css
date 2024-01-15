@@ -1,0 +1,39 @@
+:root {
+    --purple: #48006c;
+    --lightpurple: #c5a2e3;
+    --black: #000000;
+    --white: #ffffff;
+    --gray: #949494;
+  }
+
+header {
+    max-width: 100%;
+}
+
+nav {
+    max-width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Styles color and margin of text in the navigation bar */
+nav h5 {
+    color: var(--purple);
+    margin: .75vw;
+}
+
+#highscorenav:hover {
+    color: var(--lightpurple);
+}
+
+/* Main is everything below the header */
+#main {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+}
+
+#quizarea {
+    width: 50%;
+}
