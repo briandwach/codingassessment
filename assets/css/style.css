@@ -1,6 +1,6 @@
 :root {
-    --purple: #48006c;
-    --lightpurple: #c5a2e3;
+    --purple: #68009c;
+    --lightpurple: #9b5ed1;
     --black: #000000;
     --white: #ffffff;
     --gray: #949494;
@@ -24,6 +24,7 @@ nav h5 {
 
 #highscorenav:hover {
     color: var(--lightpurple);
+    cursor: pointer;
 }
 
 /* Main is everything below the header */
@@ -35,5 +36,33 @@ nav h5 {
 }
 
 #quizarea {
+    padding: 5vw;
     width: 50%;
+}
+
+#boldtext {
+    font-weight: bold;
+}
+
+#subtext {
+    font-weight: 500;
+}
+
+#buttons {
+    display: flex;
+}
+
+#buttons p {
+    width: fit-content;
+    padding: .7vw;
+    background-color: var(--purple);
+    border-radius: 10px;
+    color: var(--white);
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+#buttons p:hover {
+    cursor: pointer;
+    background-color: var(--lightpurple);
 }
