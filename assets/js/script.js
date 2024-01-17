@@ -9,12 +9,14 @@ var buttonsEl = $('#buttons');
 var feedbackEl = $('#feedback');
 var formEl = $('#initials-form');
 var inputEl = $('#initials');
+var scoresEl = $('#scores');
+
 
 // Defining global quiz variables 
 //-------------------------------------------------------------------------------
 
-// For furtuer changes to timer, change the value here and in function startTimer()
-var timer = 3;
+// To change value of timer, change the value in the resetTimer() function
+var timer = NaN;
 var timerInterval;
 
 // Stores what questions have already been presented in an array.
@@ -51,11 +53,21 @@ var answers = {
     9: ["Dot notation, Bracket notation", "Period notation, Square bracket notation", "Dot notation, Curl bracket notation", "Equal notation, Abstract notation", 0],
 };
 
-
+function resetTimer() {
+    timer = 100;
+};
 
 // Home/start screen of the web application.
 function startScreen() {
+    clearInterval(timerInterval);
+    resetTimer();
+
     quizAreaEl.css("width", "65%");
+
+    buttonsEl.empty();
+    scoresEl.css("display", "none");
+    scoresEl.empty();
+
 
     leftNavEl.text("View Highscores");
     rightNavEl.text("Time: " + timer.toString());
@@ -64,15 +76,19 @@ function startScreen() {
     boldTextEl.css("font-size", "2.5rem").css("text-align", "center");
 
     subTextEl.text("Try to answer the following code-related questions within the time limit.  Keep in mind that incorrect answers will penalize your score/time by ten seconds!");
-    subTextEl.css("text-align", "center");
+    subTextEl.css("display", "flex").css("text-align", "center");
 
     var startQuizEl = $("<p>");
     startQuizEl.text("Start Quiz").css("text-align", "center");
-    buttonsEl.append(startQuizEl).css("justify-content", "center");
+    buttonsEl.append(startQuizEl).css("display", "flex").css("justify-content", "center");
 
     formEl.css("display", "none");
 
-    startQuizEl.on('click', quizBegin);
+    $('input[type="text"]').val('');
+
+    leftNavEl.off("click", startScreen);
+    leftNavEl.on("click", viewHighScores);
+    startQuizEl.on("click", quizBegin);
 };
 
 
@@ -90,13 +106,15 @@ function quizBegin() {
     questionsPicked = [];
 
     renderQuestion();
+
+    leftNavEl.off("click", viewHighScores);
+    leftNavEl.on("click", startScreen);
 };
 
 
 
 // Triggered when the quiz starts and contains logic for the timer.
 function startTimer() {
-    timer = 3;
 
     timerInterval = setInterval(function () {
         timer--;
@@ -153,20 +171,22 @@ function renderQuestion() {
     optionsPicked = [];
     currentQuestion = randomQuestion();
     // Used for debugging
-    console.log("----------------------------------------------------");
-    console.log("CURRENT QUESTION: " + currentQuestion);
-    console.log(questions[currentQuestion]);
+    //console.log("----------------------------------------------------");
+    //console.log("CURRENT QUESTION: " + currentQuestion);
+    //console.log(questions[currentQuestion]);
     // ---
     boldTextEl.text(questions[currentQuestion]);
 
     for (var i = 0; i < (answers[currentQuestion].length - 1); i++) {
         var renderAnswer = $("<p>");
-        var list = (i + 1)
+        var list = (i + 1);
         currentAnswers = answers[currentQuestion];
         currentOption = randomOption();
         renderAnswer.text(list + ".  " + currentAnswers[currentOption]).css("text-align", "left").css("font-size", "1rem");
         buttonsEl.append(renderAnswer).css("justify-content", "left");
-        console.log(list + ". " + currentAnswers[currentOption]);
+        // Used for debugging
+        //console.log(list + ". " + currentAnswers[currentOption]);
+        // ---
     };
 
     buttonsEl.children().on("click", checkAnswer);
@@ -175,20 +195,20 @@ function renderQuestion() {
 
 function checkAnswer(event) {
     feedbackEl.empty();
-    
+
     var line = $("<hr>");
     feedbackEl.append(line);
-    
+
     // For debugging
-    var answeredString = event.target.innerText.substring(event.target.innerText.indexOf(" ") + 1).trim();
-    var storedCorrectValue = currentAnswers[currentAnswers[currentAnswers.length - 1]];
-    console.log("ANSWERED STRING: " + event.target.innerText.substring(event.target.innerText.indexOf(" ") + 1));
-    console.log("CORRECT STRING INDEX NUM: " + currentAnswers[currentAnswers.length - 1]);
-    console.log("STORED CORRECT VALUE: " + (currentAnswers[currentAnswers[currentAnswers.length - 1]]))
+    //var answeredString = event.target.innerText.substring(event.target.innerText.indexOf(" ") + 1).trim();
+    //var storedCorrectValue = currentAnswers[currentAnswers[currentAnswers.length - 1]];
+    //console.log("ANSWERED STRING: " + event.target.innerText.substring(event.target.innerText.indexOf(" ") + 1));
+    //console.log("CORRECT STRING INDEX NUM: " + currentAnswers[currentAnswers.length - 1]);
+    //console.log("STORED CORRECT VALUE: " + (currentAnswers[currentAnswers[currentAnswers.length - 1]]))
     // ----
 
 
-    if ((event.target.innerText.substring(event.target.innerText.indexOf(" ") + 1).trim()) === (currentAnswers[currentAnswers[currentAnswers.length -1]])) {
+    if ((event.target.innerText.substring(event.target.innerText.indexOf(" ") + 1).trim()) === (currentAnswers[currentAnswers[currentAnswers.length - 1]])) {
         var correctEl = $("<p>");
         correctEl.text("Correct!");
         feedbackEl.append(correctEl);
@@ -201,68 +221,184 @@ function checkAnswer(event) {
         rightNavEl.text("Time: " + timer.toString());
     };
 
-setTimeout(clearFeedback, 2500);
+    setTimeout(clearFeedback, 2500);
 };
 
 function clearFeedback() {
     feedbackEl.empty();
-    rightNavEl.css("color", "var(--lightpurple");
+    rightNavEl.css("color", "var(--purple");
 };
 
 
 // Triggered when the quiz ends. 
 function allDone() {
     buttonsEl.empty();
+    buttonsEl.children().off("click", checkAnswer);
+    buttonsEl.children().off("click", renderQuestion);
 
     clearInterval(timerInterval);
     buttonsEl.children().off("click");
-    
-    console.log("ALL DONE");
+
+    // Used for debugging
+    //console.log("ALL DONE -------------------------------------------");
+    // ---
 
     boldTextEl.text("All done!");
-    subTextEl.text("Your final score is " + timer +".").css("display", "block").css("text-align", "left");
+    subTextEl.text("Your final score is " + timer + ".").css("display", "block").css("text-align", "left");
 
     formEl.css("display", "flex");
 
-    //formEl.on("submit", addScore);
     formEl.on("submit", viewHighScores);
+    //formEl.on("submit", viewHighScores);
 };
 
-/*
-function addScore(event) {
-    event.preventDefault(); 
-    
-    var highScores = JSON.parse(localStorage.getItem("highscores"));
-    
-    if (highScores!== null) {
-        var name = input.val(); 
-        var score = timer;
-        highScores.
+// Triggered when initials are submitted for saving score
+function addScore() {
+
+    var highScores = localStorage.getItem("highscores");
+
+
+    if (highScores !== null) {
+        // Used for debugging
+        //console.log("PREVIOUS SCORE DATA");
+        //console.log(highScores);
+        // ---
+
+        highScores = highScores.split(",");
+
+        // Used for debugging
+        //console.log("SPLIT SCORE DATA");
+        //console.log(highScores);
+        // ---
+
+        var saveScore = [timer, inputEl.val()];
+
+
+        highScores[highScores.length] = saveScore;
+
+        localStorage.setItem("highscores", highScores.toString());
+
     } else {
-        var tempScore = {
-            Initials: inputEl.val(), 
-            Score: timer
-        };
-        localStorage.setItem("highscores", JSON.stringify(tempScore));
-    };  
+        // Use for debugging
+        //console.log("LOCAL STORAGE IS EMPTY");
+        // ---
 
-    $('input[type="text"]').val('');        
+        var saveScore = [timer, inputEl.val()];
+
+        // Use for debugging 
+        //console.log(saveScore);
+        //console.log(saveScore.toString());
+        // ---
+
+        localStorage.setItem("highscores", saveScore.toString());
+    };
+
+    $('input[type="text"]').val('');
+    //viewHighScores();        
 };
-*/
 
-// Triggered when initials and new highscore are submitted.
+
+// Triggered when new scores are submitted or if "View Highscores" is clicked from the start screen
 function viewHighScores(event) {
     event.preventDefault();
+    formEl.off("submit", viewHighScores);
+    leftNavEl.off("click", viewHighScores);
+
+
+
+    if (inputEl.val() !== "") {
+        addScore();
+    };
+
+    leftNavEl.text("Return to Start");
+
     boldTextEl.text("Highscores");
-    // subTextEl.css("display", "none");
+    boldTextEl.css("text-align", "left");
+
     formEl.css("display", "none");
 
-    var checkScores = JSON.parse(localStorage.getItem("highscores"));
-    if (checkScores !== null) {
-        subTextEl.text("Here are the scores");
+    buttonsEl.empty();
+    buttonsEl.css("display", "flex").css("flex-wrap", "wrap").css("justify-content", "left");
+
+    var checkForScores = localStorage.getItem("highscores");
+
+    if (checkForScores !== null) {
+        subTextEl.css("display", "none");
+
+        //Sorting and rendering of high scores
+        checkForScores = checkForScores.split(",");
+
+        // For debugging
+        //console.log(checkForScores);
+        //console.log(checkForScores.length);
+        // ---
+
+        var scoresToSort = [];
+        var a = 0;
+
+        for (var i = 0; i < (checkForScores.length / 2); i++) {
+            scoresToSort[i] = [checkForScores[a], checkForScores[(a + 1)]];
+            a += 2;
+        };
+
+        // Use for debugging
+        //console.log(scoresToSort);
+        // ---
+
+        // Use for debugging
+        //console.log("SORTED ARRAY:");
+        // ---
+
+        scoresToSort.sort((a, b) => b[0] - a[0]);
+
+        // Use for debugging
+        //console.log(scoresToSort);
+        // ---
+        
+        for (var r = 0; r < scoresToSort.length; r++) {
+            var scoreToPrint = scoresToSort[r];
+            var list = (r + 1);
+            var scoreEl = $("<p>");
+            scoreEl.text(list + ". " + scoreToPrint[1].trim() + " - " + scoreToPrint[0]);
+            scoresEl.append(scoreEl);
+        };
+
+        scoresEl.css("display", "block");
+
+        var goBackEl = $("<p>");
+        goBackEl.text("Go Back")
+        buttonsEl.append(goBackEl);
+
+        var clearScoresEl = $("<p>");
+        clearScoresEl.text("Clear Highscores")
+        buttonsEl.append(clearScoresEl);
+
+        buttonsEl.children().css("font-size", "1.5rem").css("padding", " 0vw 1vw").css("margin-right", "1.5vw");
+
+        goBackEl.on("click", startScreen);
+        clearScoresEl.on("click", clearStorage);
     } else {
-        subTextEl.text("No scores are currently saved");
-    };        
+        subTextEl.text("There are no saved scores to display!");
+        subTextEl.css("text-align", "left");
+
+        var goBackEl = $("<p>");
+        goBackEl.text("Go Back")
+        buttonsEl.append(goBackEl);
+
+        buttonsEl.children().css("font-size", "1.5rem").css("padding", "0vw 1vw").css("margin-right", "1.5vw");
+
+        goBackEl.on("click", startScreen);
+    };
+
+    leftNavEl.on("click", startScreen);
+};
+
+function clearStorage() {
+    scoresEl.css("display", "hide");
+    scoresEl.empty();
+    localStorage.removeItem("highscores");
+    subTextEl.css("display", "block").css("text-align", "left");
+    subTextEl.text("There are no saved scores to display!");
 };
 
 // This function is called when the page loads.

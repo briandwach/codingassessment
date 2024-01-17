@@ -1,6 +1,7 @@
 :root {
     --purple: #68009c;
     --lightpurple: #9b5ed1;
+    --lighterpurple: #dfd5e8;
     --black: #000000;
     --white: #ffffff;
     --gray: #949494;
@@ -78,6 +79,7 @@ form label, input {
 
 form button {
     width: fit-content;
+    border-style: none;
     background-color: var(--purple);
     border-radius: 10px;
     font-size: 1rem;
@@ -93,4 +95,10 @@ form button:hover {
 
 hr {
     color: var(--gray);
+}
+
+#scores p {
+    font-weight: 500;
+    background-color: var(--lighterpurple);
+    padding-left: 1vw;
 }
