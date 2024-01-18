@@ -5,7 +5,7 @@
     --black: #000000;
     --white: #ffffff;
     --gray: #949494;
-  }
+}
 
 header {
     max-width: 100%;
@@ -72,9 +72,10 @@ form {
     flex-wrap: wrap;
 }
 
-form label, input {
-   width: fit-content;
-   margin: auto 1vw auto 0vw;
+form label,
+input {
+    width: fit-content;
+    margin: auto 1vw auto 0vw;
 }
 
 form button {
@@ -101,4 +102,27 @@ hr {
     font-weight: 500;
     background-color: var(--lighterpurple);
     padding-left: 1vw;
+}
+
+@media screen and (max-width: 430px) {
+    #highscorenav:hover {
+        color: var(--purple);
+        cursor: pointer;
+    }
+
+    #buttons p:hover {
+        cursor: pointer;
+        background-color: var(--purple);
+    }
+
+    form button:hover {
+        cursor: pointer;
+        background-color: var(--purple);
+    }
+
+    form label,
+    input,
+    button {
+        margin-bottom: 1vh;
+    }
 }

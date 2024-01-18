@@ -12,6 +12,7 @@ var inputEl = $('#initials');
 var scoresEl = $('#scores');
 
 
+
 // Defining global quiz variables 
 //-------------------------------------------------------------------------------
 
@@ -24,6 +25,7 @@ var questionsPicked = [];
 var optionsPicked = [];
 var currentQuestion = NaN;
 var currentAnswers = [];
+var feedbackNotice = undefined;
 
 // Questions are stored in an array so they can be rendered with iteration.
 var questions = [
@@ -53,6 +55,7 @@ var answers = {
     9: ["Dot notation, Bracket notation", "Period notation, Square bracket notation", "Dot notation, Curl bracket notation", "Equal notation, Abstract notation", 0],
 };
 
+// Resets time when called.  To adjust amount of time for the quiz, adjust the variable here and ONLY here.
 function resetTimer() {
     timer = 100;
 };
@@ -68,6 +71,8 @@ function startScreen() {
     scoresEl.css("display", "none");
     scoresEl.empty();
 
+    feedbackEl.empty();
+    rightNavEl.css("color", "var(--purple");
 
     leftNavEl.text("View Highscores");
     rightNavEl.text("Time: " + timer.toString());
@@ -87,6 +92,7 @@ function startScreen() {
     $('input[type="text"]').val('');
 
     leftNavEl.off("click", startScreen);
+    leftNavEl.off("click", viewHighScores);
     leftNavEl.on("click", viewHighScores);
     startQuizEl.on("click", quizBegin);
 };
@@ -152,6 +158,7 @@ function randomOption() {
     return currentOption;
 };
 
+// When called selects a random question and stores that data in an array to avoid duplicates
 function renderQuestion() {
     // Removes child elements from buttonsEl element selector
     buttonsEl.empty();
@@ -193,7 +200,10 @@ function renderQuestion() {
     buttonsEl.children().on("click", renderQuestion);
 };
 
+// Checks if an answer is correct after a user selects an option
 function checkAnswer(event) {
+    clearTimeout(feedbackNotice);
+
     feedbackEl.empty();
 
     var line = $("<hr>");
@@ -221,9 +231,10 @@ function checkAnswer(event) {
         rightNavEl.text("Time: " + timer.toString());
     };
 
-    setTimeout(clearFeedback, 2500);
+    feedbackNotice = setTimeout(clearFeedback, 2500);
 };
 
+// Clears "Correct" or "Wrong" feedback after an answer
 function clearFeedback() {
     feedbackEl.empty();
     rightNavEl.css("color", "var(--purple");
@@ -249,7 +260,6 @@ function allDone() {
     formEl.css("display", "flex");
 
     formEl.on("submit", viewHighScores);
-    //formEl.on("submit", viewHighScores);
 };
 
 // Triggered when initials are submitted for saving score
@@ -293,8 +303,7 @@ function addScore() {
         localStorage.setItem("highscores", saveScore.toString());
     };
 
-    $('input[type="text"]').val('');
-    //viewHighScores();        
+    $('input[type="text"]').val('');       
 };
 
 
@@ -303,7 +312,6 @@ function viewHighScores(event) {
     event.preventDefault();
     formEl.off("submit", viewHighScores);
     leftNavEl.off("click", viewHighScores);
-
 
 
     if (inputEl.val() !== "") {
@@ -354,7 +362,7 @@ function viewHighScores(event) {
         // Use for debugging
         //console.log(scoresToSort);
         // ---
-        
+
         for (var r = 0; r < scoresToSort.length; r++) {
             var scoreToPrint = scoresToSort[r];
             var list = (r + 1);
@@ -393,6 +401,8 @@ function viewHighScores(event) {
     leftNavEl.on("click", startScreen);
 };
 
+
+// This function clears localstorage of highscores when called. 
 function clearStorage() {
     scoresEl.css("display", "hide");
     scoresEl.empty();
@@ -400,6 +410,7 @@ function clearStorage() {
     subTextEl.css("display", "block").css("text-align", "left");
     subTextEl.text("There are no saved scores to display!");
 };
+
 
 // This function is called when the page loads.
 startScreen();
