@@ -409,6 +409,7 @@ function clearStorage() {
     localStorage.removeItem("highscores");
     subTextEl.css("display", "block").css("text-align", "left");
     subTextEl.text("There are no saved scores to display!");
+    buttonsEl.children().eq(1).remove();
 };
 
 
